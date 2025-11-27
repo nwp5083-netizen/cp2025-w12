@@ -1,0 +1,71 @@
+from browser import document as doc, html
+import math
+
+canvas = html.CANVAS(width=600, height=400)
+canvas.id = "twflag_rot"
+doc["brython_div1"] <= canvas
+
+ctx = canvas.getContext("2d")
+
+flag_w = 250
+flag_h = 166
+gap = 20  # 國旗間距
+
+def draw_flag(x, y):
+    # 紅地
+    ctx.fillStyle = 'rgb(255,0,0)'
+    ctx.fillRect(x, y, flag_w, flag_h)
+    # 青天
+    ctx.fillStyle = 'rgb(0,0,150)'
+    ctx.fillRect(x, y, flag_w/2, flag_h/2)
+    # 白日位置
+    cx = x + flag_w/4
+    cy = y + flag_h/4
+
+    # 12道光芒
+    ctx.beginPath()
+    star_r = flag_w/8
+    angle = 0
+    for i in range(24):
+        angle += 5 * math.pi * 2 / 12
+        px = cx + math.cos(angle) * star_r
+        py = cy + math.sin(angle) * star_r
+        if i == 0:
+            ctx.moveTo(px, py)
+        else:
+            ctx.lineTo(px, py)
+    ctx.closePath()
+    ctx.fillStyle = '#fff'
+    ctx.fill()
+
+    # 藍圈
+    ctx.beginPath()
+    ctx.arc(cx, cy, flag_w * 17 / 240, 0, math.pi*2)
+    ctx.fillStyle = 'rgb(0,0,149)'
+    ctx.fill()
+
+    # 白心
+    ctx.beginPath()
+    ctx.arc(cx, cy, flag_w/16, 0, math.pi*2)
+    ctx.fillStyle = '#fff'
+    ctx.fill()
+
+def draw_flag_rotate(deg, posx, posy):
+    rad = math.radians(deg)
+    ctx.save()
+    ctx.translate(posx + flag_w/2, posy + flag_h/2)
+    ctx.rotate(rad)
+    ctx.translate(-flag_w/2, -flag_h/2)
+    draw_flag(0, 0)
+    ctx.restore()
+
+# 計算總寬度，讓國旗並排在畫布中間
+total_w = flag_w*2 + gap
+start_x = (canvas.width - total_w)/2
+start_y = (canvas.height - flag_h)/2
+
+# 左側畫 45 度
+draw_flag_rotate(-45, start_x, start_y)
+
+# 右側畫 90 度
+draw_flag_rotate(-90, start_x + flag_w + gap, start_y)
