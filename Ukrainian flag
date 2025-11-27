@@ -1,0 +1,49 @@
+from browser import document as doc, html
+import math
+
+canvas = html.CANVAS(width=600, height=400)
+canvas.id = "twflag_rot"
+doc["brython_div1"] <= canvas
+
+ctx = canvas.getContext("2d")
+
+flag_w = 250
+flag_h = 166
+gap = 20  # 國旗間距
+
+# ============================
+# 烏克蘭國旗（藍 + 黃）
+# ============================
+def draw_ukraine_flag(x, y):
+    # 上半部：藍色
+    ctx.fillStyle = '#005BBB'
+    ctx.fillRect(x, y, flag_w, flag_h / 2)
+
+    # 下半部：黃色
+    ctx.fillStyle = '#FFD500'
+    ctx.fillRect(x, y + flag_h / 2, flag_w, flag_h / 2)
+
+# ============================
+# 國旗旋轉功能
+# ============================
+def draw_flag_rotate(deg, posx, posy):
+    rad = math.radians(deg)
+    ctx.save()
+    ctx.translate(posx + flag_w/2, posy + flag_h/2)
+    ctx.rotate(rad)
+    ctx.translate(-flag_w/2, -flag_h/2)
+    draw_ukraine_flag(0, 0)
+    ctx.restore()
+
+# ============================
+# 計算國旗位置（水平置中）
+# ============================
+total_w = flag_w*2 + gap
+start_x = (canvas.width - total_w)/2
+start_y = (canvas.height - flag_h)/2
+
+# 左側：旋轉 -45 度
+draw_flag_rotate(-45, start_x, start_y)
+
+# 右側：旋轉 -90 度
+draw_flag_rotate(-90, start_x + flag_w + gap, start_y)
